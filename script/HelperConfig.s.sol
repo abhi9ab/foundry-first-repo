@@ -1,10 +1,15 @@
 // SPDX-License-Identifier: MIT
 
+// 1. Deploy mocks when we are on a local anvil chain
+// 2. Keep tarck of contract address across different chains 
 pragma solidity ^0.8.18;
 
 import {Script} from "forge-std/Script.sol";
 import {MockV3Aggregator} from "../test/mocks/MockV3Aggregator.sol";
+
 contract HelperConfig is Script{
+    // If we are on a local anvil, we deploy mocks
+    // Otherwise, grab the existing address from the live network
     
     NetworkConfig public activeNetworkConfig;
 
@@ -16,7 +21,7 @@ contract HelperConfig is Script{
     }
 
     constructor() {
-        if(block.chainid == 11155111) {
+        if(block.chainid == 11155111) { // Sepolia chain id is 11155111
             activeNetworkConfig = getSepoliaEthConfig();
         } else {
             activeNetworkConfig = getOrCreateAnvilEthConfig();
@@ -30,7 +35,10 @@ contract HelperConfig is Script{
     }
 
     function getOrCreateAnvilEthConfig() public returns (NetworkConfig memory){
-        if (activeNetworkConfig.priceFeed != address(0)) {
+        // 1. Deploy the mock
+        // 2. Return thr mock address
+
+        if (activeNetworkConfig.priceFeed != address(0)) { // If we call getOrCreateAnvilEthConfig() without this, we will create a new priceFeed everytime. However, if we have already deployed one, we don't want to deploy another one.
             return activeNetworkConfig;
         }
         vm.startBroadcast();

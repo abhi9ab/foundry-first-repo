@@ -10,7 +10,7 @@ contract FundMe {
     using PriceConverter for uint256;
 
     mapping(address => uint256) private s_addressToAmountFunded;
-    address[] public s_funders;
+    address[] private s_funders;
 
     // Could we make this constant?  /* hint: no! We should make it immutable! */
     address private immutable i_owner;
@@ -40,8 +40,8 @@ contract FundMe {
     }
     
     function cheaperWithdraw() public onlyOwner {
-        uint256 fundersLength = s_funders.length;
-        for(uint256 funderIndex = 0; funderIndex < fundersLength; i++) {
+        uint256 fundersLength = s_funders.length; // memory variable not storage variable (memory variable spends less gas)
+        for(uint256 funderIndex = 0; funderIndex < fundersLength; funderIndex++) {
             address funder = s_funders[funderIndex];
             s_addressToAmountFunded[funder] = 0;
         }
@@ -87,6 +87,8 @@ contract FundMe {
         fund();
     }
 
+    // View / Pure functions (Getters)
+
     function getAddressToAmountFunded(
         address fundingAddress
     ) external view returns(uint256) {
@@ -100,7 +102,6 @@ contract FundMe {
     function getOwner() external view returns(address) {
         return i_owner;
     }
-
 }
 
 // Concepts we didn't cover yet (will cover in later sections)

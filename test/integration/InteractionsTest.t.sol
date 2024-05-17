@@ -15,7 +15,7 @@ contract IntegrationsTest is Test {
 
     function setUp() external {
         DeployFundMe deploy = new DeployFundMe();
-        fundMe = deployFundMe.run();
+        fundMe = deploy.run();
         vm.deal(USER, STARTING_USER_BALANCE);
     }
 
@@ -23,7 +23,7 @@ contract IntegrationsTest is Test {
         FundFundMe fundFundMe = new FundFundMe();
         fundFundMe.fundFundMe(address(fundMe));
         
-        withdrawFundMe withdrawFundMe = new withdrawFundMe();
+        WithdrawFundMe withdrawFundMe = new WithdrawFundMe();
         withdrawFundMe.withdrawFundMe(address(fundMe));
 
         assert(address(fundMe).balance == 0);
